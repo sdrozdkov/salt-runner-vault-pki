@@ -1,4 +1,4 @@
-# Salt Runner Vault PKI
+# Salt Runner Vault PKI (python3 compatible version)
 
 Server-side component of the Vault PKI certificate distribution system.
 
@@ -188,16 +188,16 @@ Especially relevant sections of SaltStack documentation:
 
 #### On the Salt Master
 ```bash
-pip install PyYAML hvac
+pip3 install PyYAML hvac
 
 # Note: To install 'cryptography' you will need a full development environment,
 # additional likely packages include: libffi-dev libssl-dev python-dev
 # Or however those are named in your distribution.
 
-pip install cryptography 
+pip3 install cryptography 
 
-git clone https://github.com/ripple/salt-runner-vault-pki.git /srv/runners/salt-runner-vault-pki
-git clone https://github.com/ripple/vault-pki-formula.git /srv/formulas/vault-pki-formula
+git clone https://github.com/sdrozdkov/salt-runner-vault-pki.git /srv/runners/salt-runner-vault-pki
+git clone https://github.com/sdrozdkov/vault-pki-formula.git /srv/formulas/vault-pki-formula
 ```
 
 #### Vault PKI Config

@@ -159,7 +159,7 @@ def _verify_csr_ok(fqdn, csr_pem_data):
     """
     # TODO(dmw) Needs more thorough logging.
     csr_ok = False
-    csr = x509.load_pem_x509_csr(str(csr_pem_data), default_backend())
+    csr = x509.load_pem_x509_csr(str(csr_pem_data).encode('ascii'), default_backend())
     # TODO(dmw) Check subject alternative name (SAN) is valid as well.
     name_oid = x509.oid.NameOID.COMMON_NAME
     names = csr.subject.get_attributes_for_oid(name_oid)
@@ -168,7 +168,7 @@ def _verify_csr_ok(fqdn, csr_pem_data):
     if len(names) == 1:
         common_name = names[0].value
         # Backwards compatbile Salt 2018 fix
-        fqdn = fqdn if type(fqdn) == unicode else six.u(fqdn)
+        fqdn = fqdn if type(fqdn) == str else six.u(fqdn)
         if fqdn == common_name:
             csr_ok = True
     return csr_ok
@@ -207,8 +207,8 @@ def _write_certs_to_minion(fqdn, dest_path, cert_data):
     cert_path = os.path.join(dest_path, CERT_FILENAME)
     fullchain_path = os.path.join(dest_path, FULLCHAIN_FILENAME)
     cert = cert_data['certificate']
-    ca_chain = '\n'.join(cert_data['ca_chain'])
-    fullchain = '\n'.join([cert, ca_chain])
+    issuing_ca = cert_data['issuing_ca']
+    fullchain = '\n'.join([cert, issuing_ca])
     write_cert = client.cmd(
         fqdn,
         'file.write',
@@ -233,6 +233,8 @@ def main(**kwargs):
         path: string destination path on the minion to write back certs
     """
     fqdn = kwargs.get('host')
+    # Backwards compatible Salt 2018 fix
+    fqdn = fqdn if type(fqdn) == str else six.u(fqdn)
     csr = kwargs.get('csr')
     dest_cert_path = kwargs.get('path')
 
@@ -252,7 +254,7 @@ def main(**kwargs):
         if host_overrides.get('alt_names'):
             for name in host_overrides['alt_names']:
                 # Backwards compatbile Salt 2018 fix
-                name = name if type(name) == unicode else six.u(name)
+                name = name if type(name) == str else six.u(name)
                 alt_names.add(name)
             log.info('Sending Vault signing with extra SANs: {}'.format(
                 ','.join(alt_names)))
@@ -265,8 +267,6 @@ def main(**kwargs):
             except socket.gaierror:
                 log.warning('Failed to lookup FQDN "{}" for IPSANs'.format(
                     fqdn))
-        # Backwards compatible Salt 2018 fix
-        fqdn = fqdn if type(fqdn) == unicode else six.u(fqdn)
         signing_params = {'alt_names': ','.join(alt_names),
                           'ip_sans': ','.join(ip_list),
                           'csr': csr,
