@@ -9,7 +9,7 @@ and alternative names (SANs, IPSANs).
 
 ## Overview of Operation
 
-Must be used in tandem with the [Vault PKI Formula](https://github.com/ripple/vault-pki-formula/).
+Must be used in tandem with the [Vault PKI Formula](https://github.com/sdrozdkov/vault-pki-formula/).
 
 This overview is of the *entire* server side operation of the Vault PKI
 system.  The Vault PKI Formula provides crucial parts that must be present
@@ -311,5 +311,5 @@ PEM block should be logged, overrides mentioned and a runner return block
 **That's it!**  Your minion will check the certificate daily and request
 a new one when it's 50% through the validity period.
 
-See the [Vault PKI formula documentation](https://github.com/ripple/vault-pki-formula/)
+See the [Vault PKI formula documentation](https://github.com/sdrozdkov/vault-pki-formula/)
 for more details about client operation.
